@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>냥줍쉼터 - Furrball Collector</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'DotGothic16', 'Malgun Gothic', sans-serif;
-      background: #2a2136;
-      color: #f0e6d3;
+      font-family: 'Jua', 'Malgun Gothic', sans-serif;
+      background: #FFF5F8;
+      color: #5D4E6D;
       overflow: hidden;
       height: 100vh;
       user-select: none;
@@ -30,8 +30,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 16px;
-      background: #3d2f50;
-      border-bottom: 3px solid #5a4570;
+      background: linear-gradient(180deg, #FFF0F5, #FFE8EF);
+      border-bottom: 3px solid #FFD1DC;
       z-index: 10;
       min-height: 56px;
     }
@@ -44,14 +44,14 @@
 
     .header-left h1 {
       font-size: 20px;
-      color: #ffd700;
-      text-shadow: 1px 1px 0 #000;
+      color: #FF6B8A;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
     }
 
     #shelter-name {
       font-size: 14px;
-      color: #c9b8e0;
-      background: #4a3660;
+      color: #8B7DA0;
+      background: #F5E6F0;
       padding: 2px 10px;
       border-radius: 10px;
     }
@@ -65,15 +65,15 @@
     .level-bar {
       position: relative;
       height: 24px;
-      background: #1a1425;
+      background: #F5E6F0;
       border-radius: 12px;
-      border: 2px solid #5a4570;
+      border: 2px solid #E8D0E0;
       overflow: hidden;
     }
 
     .level-fill {
       height: 100%;
-      background: linear-gradient(90deg, #ff8c42, #ffd700);
+      background: linear-gradient(90deg, #FFB6C1, #FF8FAB);
       border-radius: 10px;
       transition: width 0.5s ease;
       width: 0%;
@@ -86,7 +86,8 @@
       transform: translate(-50%, -50%);
       font-size: 12px;
       font-weight: bold;
-      text-shadow: 1px 1px 0 #000;
+      color: #5D4E6D;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.6);
       white-space: nowrap;
     }
 
@@ -94,22 +95,21 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #4a3660;
+      background: #FFF0F5;
       padding: 4px 14px;
       border-radius: 16px;
-      border: 2px solid #ffd700;
+      border: 2px solid #FFB347;
     }
 
     .header-right .icon {
       width: 24px;
       height: 24px;
-      image-rendering: pixelated;
     }
 
     #furball-count {
       font-size: 18px;
       font-weight: bold;
-      color: #ffd700;
+      color: #FFB347;
       min-width: 30px;
       text-align: right;
     }
@@ -131,19 +131,19 @@
     }
 
     .field-level-1 {
-      background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 30%, #7baa4e 30%, #6b9a3e 60%, #8B9A5B 100%);
+      background: linear-gradient(180deg, #D4EEFF 0%, #C8E6FF 30%, #B8E6B0 30%, #A8D8A0 60%, #C8DCA8 100%);
     }
     .field-level-2 {
-      background: linear-gradient(180deg, #89CFF0 0%, #89CFF0 25%, #5cb85c 25%, #4cae4c 55%, #7baa4e 100%);
+      background: linear-gradient(180deg, #C0E0FF 0%, #B8D8FF 25%, #90D890 25%, #80C880 55%, #A8D8A0 100%);
     }
     .field-level-3 {
-      background: linear-gradient(180deg, #a0d2f0 0%, #a0d2f0 20%, #6bc76b 20%, #5cb85c 50%, #c4a67b 50%, #b8956a 100%);
+      background: linear-gradient(180deg, #D0E8FF 0%, #C8E0FF 20%, #98E098 20%, #88D088 50%, #E8D0B8 50%, #DCC0A8 100%);
     }
     .field-level-4 {
-      background: linear-gradient(180deg, #deb887 0%, #d4a87c 5%, #c49870 10%, #c4a67b 100%);
+      background: linear-gradient(180deg, #FFE8D0 0%, #FFD8C0 5%, #FFC8B0 10%, #FFD0B8 100%);
     }
     .field-level-5 {
-      background: linear-gradient(180deg, #e8d5f5 0%, #d4b8e8 20%, #c9a8dd 50%, #f0e6ff 100%);
+      background: linear-gradient(180deg, #F0E0FF 0%, #E8D0F8 20%, #E0C0F0 50%, #F8F0FF 100%);
     }
 
     /* Ground decoration */
@@ -154,36 +154,40 @@
       left: 0;
       right: 0;
       height: 8px;
-      background: rgba(0,0,0,0.15);
+      background: rgba(0,0,0,0.06);
     }
 
     /* ===== GAME ELEMENTS ===== */
     .cat-sprite {
       position: absolute;
-      width: 64px;
-      height: 64px;
-      image-rendering: pixelated;
+      width: 72px;
+      height: 72px;
       transition: none;
       z-index: 5;
       pointer-events: none;
-      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.15));
+      animation: catBob 2.5s ease-in-out infinite;
+    }
+
+    @keyframes catBob {
+      0%, 100% { margin-top: 0; }
+      50% { margin-top: -3px; }
     }
 
     .furball-sprite {
       position: absolute;
       width: 40px;
       height: 40px;
-      image-rendering: pixelated;
       cursor: pointer;
       z-index: 4;
-      animation: furballBounce 1s ease-in-out infinite;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
-      transition: transform 0.1s;
+      animation: furballBounce 1.2s ease-in-out infinite;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
+      transition: transform 0.15s;
     }
 
     .furball-sprite:hover {
       transform: scale(1.3);
-      filter: drop-shadow(0 0 8px rgba(255,215,0,0.6));
+      filter: drop-shadow(0 0 10px rgba(255,183,193,0.7));
     }
 
     .placed-item-sprite {
@@ -192,12 +196,12 @@
       height: 64px;
       image-rendering: pixelated;
       z-index: 3;
-      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.15));
       cursor: pointer;
     }
 
     .placed-item-sprite:hover {
-      filter: drop-shadow(0 0 6px rgba(255,255,200,0.5)) drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 0 8px rgba(255,183,193,0.5)) drop-shadow(1px 2px 2px rgba(0,0,0,0.15));
     }
 
     .placement-ghost {
@@ -215,11 +219,26 @@
       position: absolute;
       font-size: 16px;
       font-weight: bold;
-      color: #ffd700;
-      text-shadow: 1px 1px 0 #000;
+      color: #FF8FAB;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
       pointer-events: none;
       z-index: 30;
       animation: floatUp 1s ease-out forwards;
+    }
+
+    /* ===== SPARKLE EFFECT ===== */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 31;
+      font-size: 14px;
+      animation: sparkleFloat 0.8s ease-out forwards;
+    }
+
+    @keyframes sparkleFloat {
+      0% { opacity: 1; transform: scale(0.5) translateY(0); }
+      50% { opacity: 1; transform: scale(1.2) translateY(-15px); }
+      100% { opacity: 0; transform: scale(0.8) translateY(-30px); }
     }
 
     @keyframes floatUp {
@@ -229,14 +248,14 @@
 
     @keyframes furballBounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      50% { transform: translateY(-5px); }
     }
 
     /* ===== SIDEBAR ===== */
     #sidebar {
       width: 260px;
-      background: #3d2f50;
-      border-left: 3px solid #5a4570;
+      background: linear-gradient(180deg, #FFF5F8, #FFF0F5);
+      border-left: 3px solid #FFD1DC;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -245,14 +264,13 @@
 
     .sidebar-section {
       padding: 12px;
-      border-bottom: 2px solid #5a4570;
+      border-bottom: 2px solid #FFE0E8;
     }
 
     .sidebar-section h2 {
       font-size: 14px;
-      color: #ffd700;
+      color: #FF6B8A;
       margin-bottom: 8px;
-      text-shadow: 1px 1px 0 #000;
     }
 
     /* Gacha Section */
@@ -260,9 +278,9 @@
       width: 120px;
       height: 140px;
       margin: 0 auto 10px;
-      background: linear-gradient(180deg, #ff6b6b, #ee5a24);
+      background: linear-gradient(180deg, #FFB6C1, #FF8FAB);
       border-radius: 60px 60px 10px 10px;
-      border: 3px solid #c0392b;
+      border: 3px solid #FF7094;
       position: relative;
       display: flex;
       align-items: center;
@@ -276,15 +294,15 @@
       font-size: 16px;
       color: #fff;
       font-weight: bold;
-      text-shadow: 1px 1px 0 #000;
+      text-shadow: 1px 1px 0 rgba(255,112,148,0.5);
     }
 
     .gacha-window {
       width: 70px;
       height: 70px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.3);
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.5);
       margin-top: 15px;
       display: flex;
       align-items: center;
@@ -294,7 +312,7 @@
     .gacha-window::after {
       content: '?';
       font-size: 28px;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.7);
     }
 
     #gacha-btn {
@@ -305,23 +323,23 @@
       font-size: 15px;
       font-weight: bold;
       color: #fff;
-      background: linear-gradient(180deg, #ff8c42, #e67e22);
-      border: 2px solid #d35400;
-      border-radius: 8px;
+      background: linear-gradient(180deg, #FFB6C1, #FF8FAB);
+      border: 2px solid #FF7094;
+      border-radius: 12px;
       cursor: pointer;
-      text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+      text-shadow: 0 1px 1px rgba(0,0,0,0.15);
       transition: all 0.2s;
     }
 
     #gacha-btn:hover:not(:disabled) {
-      background: linear-gradient(180deg, #ffa751, #f39c12);
+      background: linear-gradient(180deg, #FFC4D0, #FFA0B8);
       transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(255,140,66,0.4);
+      box-shadow: 0 3px 10px rgba(255,143,171,0.4);
     }
 
     #gacha-btn:disabled {
-      background: #666;
-      border-color: #555;
+      background: #E0D0D8;
+      border-color: #D0C0C8;
       cursor: not-allowed;
       opacity: 0.7;
     }
@@ -332,7 +350,7 @@
 
     .gacha-cost {
       font-size: 12px;
-      color: #ddd;
+      color: #8B7DA0;
       text-align: center;
       margin-top: 4px;
     }
@@ -348,9 +366,9 @@
     .inventory-slot {
       position: relative;
       aspect-ratio: 1;
-      background: #2a2136;
-      border: 2px solid #5a4570;
-      border-radius: 6px;
+      background: #FFF8FA;
+      border: 2px solid #E8D0E0;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -359,14 +377,14 @@
     }
 
     .inventory-slot:hover {
-      border-color: #ffd700;
-      background: #3d2f50;
+      border-color: #FFB6C1;
+      background: #FFF0F5;
     }
 
     .inventory-slot.selected {
-      border-color: #ffd700;
-      box-shadow: 0 0 10px rgba(255,215,0,0.5);
-      background: #4a3660;
+      border-color: #FF8FAB;
+      box-shadow: 0 0 10px rgba(255,143,171,0.4);
+      background: #FFE8EF;
     }
 
     .inventory-slot img {
@@ -379,7 +397,7 @@
       position: absolute;
       top: -4px;
       right: -4px;
-      background: #e74c3c;
+      background: #FF8FAB;
       color: white;
       font-size: 10px;
       min-width: 16px;
@@ -397,6 +415,7 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 8px;
+      color: #FFB347;
     }
 
     /* Cat list */
@@ -408,9 +427,9 @@
 
     .cat-badge {
       aspect-ratio: 1;
-      background: #2a2136;
-      border: 2px solid #5a4570;
-      border-radius: 6px;
+      background: #FFF8FA;
+      border: 2px solid #E8D0E0;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -420,18 +439,17 @@
     .cat-badge img {
       width: 85%;
       height: 85%;
-      image-rendering: pixelated;
     }
 
     .cat-badge.locked {
-      filter: brightness(0.3);
+      filter: brightness(0.6) saturate(0);
     }
 
     .cat-badge.locked::after {
       content: '?';
       position: absolute;
       font-size: 18px;
-      color: #888;
+      color: #C0B0C0;
     }
 
     /* ===== GACHA MODAL ===== */
@@ -455,7 +473,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(93,78,109,0.6);
     }
 
     .gacha-result {
@@ -472,9 +490,9 @@
       animation: capsuleSpin 0.8s ease-out;
     }
 
-    .capsule-common { background: linear-gradient(135deg, #95a5a6, #bdc3c7); box-shadow: 0 0 20px rgba(189,195,199,0.5); }
-    .capsule-rare { background: linear-gradient(135deg, #3498db, #5dade2); box-shadow: 0 0 30px rgba(52,152,219,0.6); }
-    .capsule-epic { background: linear-gradient(135deg, #9b59b6, #c39bd3); box-shadow: 0 0 40px rgba(155,89,182,0.7); }
+    .capsule-common { background: linear-gradient(135deg, #C8D8E8, #E0E8F0); box-shadow: 0 0 20px rgba(200,216,232,0.5); }
+    .capsule-rare { background: linear-gradient(135deg, #88C8F8, #A8D8FF); box-shadow: 0 0 30px rgba(136,200,248,0.6); }
+    .capsule-epic { background: linear-gradient(135deg, #D0A0E8, #E0C0F0); box-shadow: 0 0 40px rgba(208,160,232,0.7); }
 
     @keyframes capsuleSpin {
       0% { transform: scale(0) rotate(0deg); opacity: 0; }
@@ -483,9 +501,9 @@
     }
 
     .gacha-item-reveal {
-      background: #3d2f50;
-      border: 3px solid #5a4570;
-      border-radius: 16px;
+      background: #FFF5F8;
+      border: 3px solid #FFD1DC;
+      border-radius: 20px;
       padding: 24px;
       min-width: 250px;
       animation: revealPop 0.3s ease-out;
@@ -507,27 +525,27 @@
       margin-bottom: 12px;
     }
 
-    .rarity-common { background: #95a5a6; color: #fff; }
-    .rarity-rare { background: #3498db; color: #fff; }
-    .rarity-epic { background: #9b59b6; color: #fff; }
+    .rarity-common { background: #C8D8E8; color: #5D6D7D; }
+    .rarity-rare { background: #88C8F8; color: #2C5F8A; }
+    .rarity-epic { background: #D0A0E8; color: #6A3D7D; }
 
     .gacha-item-reveal img {
       width: 96px;
       height: 96px;
       image-rendering: pixelated;
       margin: 8px 0;
-      filter: drop-shadow(0 0 8px rgba(255,215,0,0.3));
+      filter: drop-shadow(0 0 10px rgba(255,183,193,0.4));
     }
 
     .gacha-item-reveal h3 {
       font-size: 18px;
-      color: #ffd700;
+      color: #FF6B8A;
       margin: 8px 0 4px;
     }
 
     .gacha-item-reveal p {
       font-size: 13px;
-      color: #c9b8e0;
+      color: #8B7DA0;
       margin-bottom: 16px;
     }
 
@@ -535,16 +553,17 @@
       font-family: inherit;
       font-size: 14px;
       padding: 8px 24px;
-      background: #5a4570;
+      background: linear-gradient(180deg, #FFB6C1, #FF8FAB);
       color: #fff;
-      border: 2px solid #7b6890;
-      border-radius: 8px;
+      border: 2px solid #FF7094;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .gacha-item-reveal button:hover {
-      background: #7b6890;
+      background: linear-gradient(180deg, #FFC4D0, #FFA0B8);
+      box-shadow: 0 2px 8px rgba(255,143,171,0.4);
     }
 
     /* ===== TOAST NOTIFICATIONS ===== */
@@ -562,14 +581,14 @@
     }
 
     .toast {
-      background: #3d2f50;
-      border: 2px solid #ffd700;
-      color: #f0e6d3;
+      background: #FFF5F8;
+      border: 2px solid #FFB6C1;
+      color: #5D4E6D;
       padding: 8px 20px;
       border-radius: 20px;
       font-size: 14px;
       font-weight: bold;
-      text-shadow: 1px 1px 0 #000;
+      box-shadow: 0 2px 8px rgba(255,183,193,0.3);
       animation: toastIn 0.3s ease-out, toastOut 0.5s 2.5s ease-in forwards;
       white-space: nowrap;
     }
@@ -590,14 +609,15 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(61,47,80,0.95);
-      border: 2px solid #ffd700;
-      color: #ffd700;
+      background: rgba(255,245,248,0.95);
+      border: 2px solid #FF8FAB;
+      color: #FF6B8A;
       padding: 8px 20px;
       border-radius: 20px;
       font-size: 14px;
       z-index: 50;
       display: none;
+      box-shadow: 0 2px 10px rgba(255,143,171,0.3);
     }
 
     /* ===== INTRO OVERLAY ===== */
@@ -605,7 +625,7 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 200;
-      background: rgba(42,33,54,0.95);
+      background: rgba(255,240,245,0.97);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -620,15 +640,15 @@
     }
 
     .intro-content h1 {
-      font-size: 32px;
-      color: #ffd700;
+      font-size: 36px;
+      color: #FF6B8A;
       margin-bottom: 20px;
-      text-shadow: 2px 2px 0 #000;
+      text-shadow: 2px 2px 0 rgba(255,183,193,0.5);
     }
 
     .intro-content p {
       font-size: 15px;
-      color: #c9b8e0;
+      color: #8B7DA0;
       line-height: 1.8;
       margin-bottom: 24px;
     }
@@ -637,24 +657,24 @@
       font-family: inherit;
       font-size: 18px;
       padding: 12px 40px;
-      background: linear-gradient(180deg, #ff8c42, #e67e22);
+      background: linear-gradient(180deg, #FFB6C1, #FF8FAB);
       color: #fff;
-      border: 3px solid #d35400;
-      border-radius: 12px;
+      border: 3px solid #FF7094;
+      border-radius: 16px;
       cursor: pointer;
-      text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+      text-shadow: 0 1px 1px rgba(0,0,0,0.1);
       transition: all 0.2s;
     }
 
     .intro-content button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255,140,66,0.5);
+      box-shadow: 0 4px 15px rgba(255,143,171,0.5);
     }
 
     /* ===== SCROLLBAR ===== */
     #sidebar::-webkit-scrollbar { width: 6px; }
-    #sidebar::-webkit-scrollbar-track { background: #2a2136; }
-    #sidebar::-webkit-scrollbar-thumb { background: #5a4570; border-radius: 3px; }
+    #sidebar::-webkit-scrollbar-track { background: #FFF5F8; }
+    #sidebar::-webkit-scrollbar-thumb { background: #FFD1DC; border-radius: 3px; }
   </style>
 </head>
 <body>
@@ -672,7 +692,7 @@
       </div>
       <div class="header-right">
         <span id="furball-count">0</span>
-        <img src="assets/furballs/furball_golden.png" class="icon" alt="furball">
+        <img src="assets/furballs/furball_golden.svg" class="icon" alt="furball">
       </div>
     </header>
 
@@ -690,7 +710,7 @@
         <div class="sidebar-section" id="inventory-section">
           <h2>인벤토리</h2>
           <div id="inventory"></div>
-          <p style="font-size:11px; color:#888; margin-top:6px; text-align:center;">아이템을 클릭 후 필드에 배치하세요</p>
+          <p style="font-size:11px; color:#B0A0B8; margin-top:6px; text-align:center;">아이템을 클릭 후 필드에 배치하세요</p>
         </div>
         <div class="sidebar-section" id="cat-section">
           <h2>방문 고양이</h2>
@@ -725,7 +745,7 @@
         그곳에 하나둘 길고양이들이 찾아오기 시작하고,<br>
         고양이들이 떨어뜨리는 털뭉치에는<br>
         신비한 힘이 깃들어 있었습니다.<br><br>
-        털뭉치로 <b style="color:#ffd700">냥챠 머신</b>을 돌려<br>
+        털뭉치로 <b style="color:#FF6B8A">냥챠 머신</b>을 돌려<br>
         고양이들을 위한 쉼터를 꾸며주세요!
       </p>
       <button id="start-btn">시작하기</button>
@@ -841,7 +861,7 @@ class Cat {
   constructor(type) {
     this.type = type;
     this.el = document.createElement('img');
-    this.el.src = `assets/cats/${type}.png`;
+    this.el.src = `assets/cats/${type}.svg`;
     this.el.className = 'cat-sprite';
     this.el.alt = CAT_NAMES[type] || type;
 
@@ -930,7 +950,7 @@ class Cat {
 // ============================================================
 function spawnFurball(x, y, type) {
   const el = document.createElement('img');
-  el.src = `assets/furballs/${type}.png`;
+  el.src = `assets/furballs/${type}.svg`;
   el.className = 'furball-sprite';
   el.style.left = (x - CONFIG.FURBALL_SIZE / 2) + 'px';
   el.style.top = y + 'px';
@@ -949,6 +969,7 @@ function spawnFurball(x, y, type) {
 function collectFurball(furball) {
   state.furballs++;
   showFloatText(furball.x, furball.y, '+1');
+  showSparkles(furball.x, furball.y);
   furball.el.style.transition = 'transform 0.2s, opacity 0.2s';
   furball.el.style.transform = 'scale(1.5)';
   furball.el.style.opacity = '0';
@@ -959,6 +980,20 @@ function collectFurball(furball) {
 
   droppedFurballs = droppedFurballs.filter(f => f !== furball);
   updateUI();
+}
+
+function showSparkles(x, y) {
+  const symbols = ['\u2728', '\u2764', '\u2B50', '\u2740'];
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElement('div');
+    el.className = 'sparkle';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = (x + (Math.random() - 0.5) * 40) + 'px';
+    el.style.top = (y + (Math.random() - 0.5) * 30) + 'px';
+    el.style.animationDelay = (Math.random() * 0.3) + 's';
+    field.appendChild(el);
+    setTimeout(() => el.remove(), 1200);
+  }
 }
 
 function updateFurballs() {
@@ -1311,7 +1346,7 @@ function updateCatListUI() {
     if (!unlocked.includes(catType)) badge.classList.add('locked');
 
     const img = document.createElement('img');
-    img.src = `assets/cats/${catType}.png`;
+    img.src = `assets/cats/${catType}.svg`;
     img.alt = CAT_NAMES[catType];
     badge.appendChild(img);
     badge.title = unlocked.includes(catType) ? CAT_NAMES[catType] : '???';

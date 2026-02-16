@@ -1,0 +1,25 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fluffy body -->
+  <circle cx="20" cy="22" r="12" fill="#A0A0A0"/>
+  <circle cx="14" cy="18" r="5" fill="#A0A0A0"/>
+  <circle cx="26" cy="18" r="5" fill="#A0A0A0"/>
+  <circle cx="12" cy="24" r="4.5" fill="#A0A0A0"/>
+  <circle cx="28" cy="24" r="4.5" fill="#A0A0A0"/>
+  <circle cx="15" cy="29" r="4" fill="#A0A0A0"/>
+  <circle cx="25" cy="29" r="4" fill="#A0A0A0"/>
+  <circle cx="20" cy="14" r="4" fill="#A0A0A0"/>
+  <!-- Inner fluff highlight -->
+  <circle cx="20" cy="20" r="7" fill="#C0C0C0" opacity="0.5"/>
+  <!-- Eyes -->
+  <circle cx="17" cy="21" r="2" fill="#333"/>
+  <circle cx="23" cy="21" r="2" fill="#333"/>
+  <circle cx="16.5" cy="20.5" r="0.8" fill="white"/>
+  <circle cx="22.5" cy="20.5" r="0.8" fill="white"/>
+  <!-- Mouth -->
+  <path d="M18,24 Q20,25.5 22,24" fill="none" stroke="#707070" stroke-width="0.8" stroke-linecap="round"/>
+  <!-- Blush -->
+  <circle cx="14" cy="23" r="2" fill="#FFB6C1" opacity="0.4"/>
+  <circle cx="26" cy="23" r="2" fill="#FFB6C1" opacity="0.4"/>
+  <!-- Sparkle -->
+  <path d="M30,8 L31,11 L34,12 L31,13 L30,16 L29,13 L26,12 L29,11 Z" fill="#D0D0D0" opacity="0.7"/>
+</svg>
