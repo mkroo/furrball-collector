@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>냥줍쉼터 - Furrball Collector</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DotGothic16', 'Malgun Gothic', sans-serif;
+      background: #2a2136;
+      color: #f0e6d3;
+      overflow: hidden;
+      height: 100vh;
+      user-select: none;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #3d2f50;
+      border-bottom: 3px solid #5a4570;
+      z-index: 10;
+      min-height: 56px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 20px;
+      color: #ffd700;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    #shelter-name {
+      font-size: 14px;
+      color: #c9b8e0;
+      background: #4a3660;
+      padding: 2px 10px;
+      border-radius: 10px;
+    }
+
+    .header-center {
+      flex: 1;
+      max-width: 300px;
+      margin: 0 20px;
+    }
+
+    .level-bar {
+      position: relative;
+      height: 24px;
+      background: #1a1425;
+      border-radius: 12px;
+      border: 2px solid #5a4570;
+      overflow: hidden;
+    }
+
+    .level-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff8c42, #ffd700);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .level-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+      white-space: nowrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #4a3660;
+      padding: 4px 14px;
+      border-radius: 16px;
+      border: 2px solid #ffd700;
+    }
+
+    .header-right .icon {
+      width: 24px;
+      height: 24px;
+      image-rendering: pixelated;
+    }
+
+    #furball-count {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffd700;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ===== GAME FIELD ===== */
+    #game-field {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: background 1s ease;
+    }
+
+    .field-level-1 {
+      background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 30%, #7baa4e 30%, #6b9a3e 60%, #8B9A5B 100%);
+    }
+    .field-level-2 {
+      background: linear-gradient(180deg, #89CFF0 0%, #89CFF0 25%, #5cb85c 25%, #4cae4c 55%, #7baa4e 100%);
+    }
+    .field-level-3 {
+      background: linear-gradient(180deg, #a0d2f0 0%, #a0d2f0 20%, #6bc76b 20%, #5cb85c 50%, #c4a67b 50%, #b8956a 100%);
+    }
+    .field-level-4 {
+      background: linear-gradient(180deg, #deb887 0%, #d4a87c 5%, #c49870 10%, #c4a67b 100%);
+    }
+    .field-level-5 {
+      background: linear-gradient(180deg, #e8d5f5 0%, #d4b8e8 20%, #c9a8dd 50%, #f0e6ff 100%);
+    }
+
+    /* Ground decoration */
+    #game-field::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: rgba(0,0,0,0.15);
+    }
+
+    /* ===== GAME ELEMENTS ===== */
+    .cat-sprite {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      transition: none;
+      z-index: 5;
+      pointer-events: none;
+      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+    }
+
+    .furball-sprite {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      image-rendering: pixelated;
+      cursor: pointer;
+      z-index: 4;
+      animation: furballBounce 1s ease-in-out infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+      transition: transform 0.1s;
+    }
+
+    .furball-sprite:hover {
+      transform: scale(1.3);
+      filter: drop-shadow(0 0 8px rgba(255,215,0,0.6));
+    }
+
+    .placed-item-sprite {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      z-index: 3;
+      filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+      cursor: pointer;
+    }
+
+    .placed-item-sprite:hover {
+      filter: drop-shadow(0 0 6px rgba(255,255,200,0.5)) drop-shadow(1px 2px 1px rgba(0,0,0,0.3));
+    }
+
+    .placement-ghost {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      z-index: 20;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* ===== FLOATING TEXT ===== */
+    .float-text {
+      position: absolute;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 1px 1px 0 #000;
+      pointer-events: none;
+      z-index: 30;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+
+    @keyframes furballBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* ===== SIDEBAR ===== */
+    #sidebar {
+      width: 260px;
+      background: #3d2f50;
+      border-left: 3px solid #5a4570;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .sidebar-section {
+      padding: 12px;
+      border-bottom: 2px solid #5a4570;
+    }
+
+    .sidebar-section h2 {
+      font-size: 14px;
+      color: #ffd700;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Gacha Section */
+    #gacha-machine-visual {
+      width: 120px;
+      height: 140px;
+      margin: 0 auto 10px;
+      background: linear-gradient(180deg, #ff6b6b, #ee5a24);
+      border-radius: 60px 60px 10px 10px;
+      border: 3px solid #c0392b;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #gacha-machine-visual::before {
+      content: '냥챠';
+      position: absolute;
+      top: 10px;
+      font-size: 16px;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .gacha-window {
+      width: 70px;
+      height: 70px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gacha-window::after {
+      content: '?';
+      font-size: 28px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    #gacha-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(180deg, #ff8c42, #e67e22);
+      border: 2px solid #d35400;
+      border-radius: 8px;
+      cursor: pointer;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+
+    #gacha-btn:hover:not(:disabled) {
+      background: linear-gradient(180deg, #ffa751, #f39c12);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(255,140,66,0.4);
+    }
+
+    #gacha-btn:disabled {
+      background: #666;
+      border-color: #555;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    #gacha-btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .gacha-cost {
+      font-size: 12px;
+      color: #ddd;
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* Inventory Section */
+    #inventory {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      min-height: 80px;
+    }
+
+    .inventory-slot {
+      position: relative;
+      aspect-ratio: 1;
+      background: #2a2136;
+      border: 2px solid #5a4570;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .inventory-slot:hover {
+      border-color: #ffd700;
+      background: #3d2f50;
+    }
+
+    .inventory-slot.selected {
+      border-color: #ffd700;
+      box-shadow: 0 0 10px rgba(255,215,0,0.5);
+      background: #4a3660;
+    }
+
+    .inventory-slot img {
+      width: 80%;
+      height: 80%;
+      image-rendering: pixelated;
+    }
+
+    .inventory-slot .count-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #e74c3c;
+      color: white;
+      font-size: 10px;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .inventory-slot .rarity-indicator {
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+    }
+
+    /* Cat list */
+    #cat-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .cat-badge {
+      aspect-ratio: 1;
+      background: #2a2136;
+      border: 2px solid #5a4570;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cat-badge img {
+      width: 85%;
+      height: 85%;
+      image-rendering: pixelated;
+    }
+
+    .cat-badge.locked {
+      filter: brightness(0.3);
+    }
+
+    .cat-badge.locked::after {
+      content: '?';
+      position: absolute;
+      font-size: 18px;
+      color: #888;
+    }
+
+    /* ===== GACHA MODAL ===== */
+    #gacha-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #gacha-modal.hidden { display: none; }
+
+    .gacha-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+    }
+
+    .gacha-result {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .gacha-capsule {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      animation: capsuleSpin 0.8s ease-out;
+    }
+
+    .capsule-common { background: linear-gradient(135deg, #95a5a6, #bdc3c7); box-shadow: 0 0 20px rgba(189,195,199,0.5); }
+    .capsule-rare { background: linear-gradient(135deg, #3498db, #5dade2); box-shadow: 0 0 30px rgba(52,152,219,0.6); }
+    .capsule-epic { background: linear-gradient(135deg, #9b59b6, #c39bd3); box-shadow: 0 0 40px rgba(155,89,182,0.7); }
+
+    @keyframes capsuleSpin {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      50% { transform: scale(1.3) rotate(360deg); opacity: 1; }
+      100% { transform: scale(1) rotate(720deg); opacity: 1; }
+    }
+
+    .gacha-item-reveal {
+      background: #3d2f50;
+      border: 3px solid #5a4570;
+      border-radius: 16px;
+      padding: 24px;
+      min-width: 250px;
+      animation: revealPop 0.3s ease-out;
+    }
+
+    .gacha-item-reveal.hidden { display: none; }
+
+    @keyframes revealPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .rarity-badge {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .rarity-common { background: #95a5a6; color: #fff; }
+    .rarity-rare { background: #3498db; color: #fff; }
+    .rarity-epic { background: #9b59b6; color: #fff; }
+
+    .gacha-item-reveal img {
+      width: 96px;
+      height: 96px;
+      image-rendering: pixelated;
+      margin: 8px 0;
+      filter: drop-shadow(0 0 8px rgba(255,215,0,0.3));
+    }
+
+    .gacha-item-reveal h3 {
+      font-size: 18px;
+      color: #ffd700;
+      margin: 8px 0 4px;
+    }
+
+    .gacha-item-reveal p {
+      font-size: 13px;
+      color: #c9b8e0;
+      margin-bottom: 16px;
+    }
+
+    .gacha-item-reveal button {
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 24px;
+      background: #5a4570;
+      color: #fff;
+      border: 2px solid #7b6890;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gacha-item-reveal button:hover {
+      background: #7b6890;
+    }
+
+    /* ===== TOAST NOTIFICATIONS ===== */
+    #toast-container {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #3d2f50;
+      border: 2px solid #ffd700;
+      color: #f0e6d3;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+      animation: toastIn 0.3s ease-out, toastOut 0.5s 2.5s ease-in forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes toastIn {
+      0% { transform: translateY(-20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ===== PLACEMENT MODE HINT ===== */
+    #placement-hint {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(61,47,80,0.95);
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 50;
+      display: none;
+    }
+
+    /* ===== INTRO OVERLAY ===== */
+    #intro-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 200;
+      background: rgba(42,33,54,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #intro-overlay.hidden { display: none; }
+
+    .intro-content {
+      text-align: center;
+      max-width: 420px;
+      padding: 40px;
+    }
+
+    .intro-content h1 {
+      font-size: 32px;
+      color: #ffd700;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .intro-content p {
+      font-size: 15px;
+      color: #c9b8e0;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .intro-content button {
+      font-family: inherit;
+      font-size: 18px;
+      padding: 12px 40px;
+      background: linear-gradient(180deg, #ff8c42, #e67e22);
+      color: #fff;
+      border: 3px solid #d35400;
+      border-radius: 12px;
+      cursor: pointer;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+
+    .intro-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,140,66,0.5);
+    }
+
+    /* ===== SCROLLBAR ===== */
+    #sidebar::-webkit-scrollbar { width: 6px; }
+    #sidebar::-webkit-scrollbar-track { background: #2a2136; }
+    #sidebar::-webkit-scrollbar-thumb { background: #5a4570; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-left">
+        <h1>냥줍쉼터</h1>
+        <span id="shelter-name">빈 공터</span>
+      </div>
+      <div class="header-center">
+        <div class="level-bar">
+          <div class="level-fill" id="level-fill"></div>
+          <span class="level-text" id="level-text">Lv.1 (0/3)</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="furball-count">0</span>
+        <img src="assets/furballs/furball_golden.png" class="icon" alt="furball">
+      </div>
+    </header>
+
+    <main>
+      <div id="game-field" class="field-level-1"></div>
+      <aside id="sidebar">
+        <div class="sidebar-section" id="gacha-section">
+          <h2>냥챠 머신</h2>
+          <div id="gacha-machine-visual">
+            <div class="gacha-window"></div>
+          </div>
+          <button id="gacha-btn" disabled>가챠 돌리기 (10 털뭉치)</button>
+          <div class="gacha-cost">보유: <span id="sidebar-furball-count">0</span> 털뭉치</div>
+        </div>
+        <div class="sidebar-section" id="inventory-section">
+          <h2>인벤토리</h2>
+          <div id="inventory"></div>
+          <p style="font-size:11px; color:#888; margin-top:6px; text-align:center;">아이템을 클릭 후 필드에 배치하세요</p>
+        </div>
+        <div class="sidebar-section" id="cat-section">
+          <h2>방문 고양이</h2>
+          <div id="cat-list"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="gacha-modal" class="hidden">
+    <div class="gacha-overlay"></div>
+    <div class="gacha-result">
+      <div class="gacha-capsule" id="gacha-capsule"></div>
+      <div class="gacha-item-reveal hidden" id="gacha-reveal">
+        <div class="rarity-badge" id="rarity-badge"></div><br>
+        <img id="gacha-item-img" alt="item">
+        <h3 id="gacha-item-name"></h3>
+        <p id="gacha-item-desc"></p>
+        <button id="gacha-confirm-btn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <div id="placement-hint">아이템을 배치할 위치를 클릭하세요 (우클릭: 취소)</div>
+
+  <div id="intro-overlay">
+    <div class="intro-content">
+      <h1>냥줍쉼터</h1>
+      <p>
+        어느 날 빈 공터를 발견했습니다.<br>
+        그곳에 하나둘 길고양이들이 찾아오기 시작하고,<br>
+        고양이들이 떨어뜨리는 털뭉치에는<br>
+        신비한 힘이 깃들어 있었습니다.<br><br>
+        털뭉치로 <b style="color:#ffd700">냥챠 머신</b>을 돌려<br>
+        고양이들을 위한 쉼터를 꾸며주세요!
+      </p>
+      <button id="start-btn">시작하기</button>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const CONFIG = {
+  GACHA_COST: 10,
+  CAT_SPEED: 0.6,            // pixels per frame
+  FURBALL_DROP_MIN: 4000,     // ms
+  FURBALL_DROP_MAX: 10000,    // ms
+  FURBALL_LIFETIME: 15000,    // ms before furball disappears
+  CAT_IDLE_MIN: 2000,
+  CAT_IDLE_MAX: 5000,
+  SAVE_INTERVAL: 15000,
+  SPRITE_SIZE: 64,
+  FURBALL_SIZE: 40,
+};
+
+const SHELTER_LEVELS = [
+  { level: 1, name: '빈 공터',      itemsNeeded: 0,  cats: ['cat_orange_tabby', 'cat_black'] },
+  { level: 2, name: '작은 마당',    itemsNeeded: 3,  cats: ['cat_white', 'cat_gray_tabby'] },
+  { level: 3, name: '아늑한 쉼터',  itemsNeeded: 8,  cats: ['cat_calico', 'cat_siamese'] },
+  { level: 4, name: '고양이 카페',  itemsNeeded: 15, cats: ['cat_russian_blue'] },
+  { level: 5, name: '고양이 천국',  itemsNeeded: 25, cats: ['cat_tuxedo'] },
+];
+
+const CAT_NAMES = {
+  cat_orange_tabby: '치즈',
+  cat_black:        '까망',
+  cat_white:        '하양',
+  cat_gray_tabby:   '줄무늬',
+  cat_calico:       '삼색',
+  cat_siamese:      '샴',
+  cat_russian_blue: '블루',
+  cat_tuxedo:       '턱시도',
+};
+
+const FURBALL_TYPES = [
+  'furball_orange', 'furball_black', 'furball_white',
+  'furball_gray', 'furball_calico', 'furball_golden',
+];
+
+const CAT_TO_FURBALL = {
+  cat_orange_tabby: 'furball_orange',
+  cat_black:        'furball_black',
+  cat_white:        'furball_white',
+  cat_gray_tabby:   'furball_gray',
+  cat_calico:       'furball_calico',
+  cat_siamese:      'furball_calico',
+  cat_russian_blue: 'furball_gray',
+  cat_tuxedo:       'furball_black',
+};
+
+const GACHA_ITEMS = {
+  traffic_cone:    { name: '라바콘',       desc: '어디서 가져온 걸까...?',           rarity: 'common', img: 'assets/gacha_items/traffic_cone.png' },
+  cardboard_box:   { name: '택배 상자',    desc: '고양이가 제일 좋아하는 가구',      rarity: 'common', img: 'assets/gacha_items/cardboard_box.png' },
+  cushion:         { name: '쿠션',         desc: '폭신폭신 낮잠 천국',               rarity: 'common', img: 'assets/gacha_items/cushion.png' },
+  food_bowl:       { name: '밥그릇',       desc: '맛있는 밥이 가득',                 rarity: 'common', img: 'assets/gacha_items/food_bowl.png' },
+  yarn_ball:       { name: '털실 뭉치',    desc: '끝없는 재미의 원천',               rarity: 'rare',   img: 'assets/gacha_items/yarn_ball.png' },
+  fish_toy:        { name: '물고기 장난감', desc: '진짜 물고기 아님 주의',            rarity: 'rare',   img: 'assets/gacha_items/fish_toy.png' },
+  mouse_toy:       { name: '쥐 장난감',    desc: '삑삑! 소리가 나요',                rarity: 'rare',   img: 'assets/gacha_items/mouse_toy.png' },
+  plant_pot:       { name: '화분',         desc: '가끔 흙을 파는 고양이 주의',       rarity: 'rare',   img: 'assets/gacha_items/plant_pot.png' },
+  cat_tower:       { name: '캣타워',       desc: '고양이들의 꿈의 놀이터!',          rarity: 'epic',   img: 'assets/gacha_items/cat_tower.png' },
+  trash_can:       { name: '쓰레기통',     desc: '생선뼈 냄새가 솔솔~',              rarity: 'epic',   img: 'assets/gacha_items/trash_can.png' },
+  scratching_post: { name: '스크래처',     desc: '가구 대신 이걸 긁어주세요',        rarity: 'epic',   img: 'assets/gacha_items/scratching_post.png' },
+  window_perch:    { name: '창문 선반',    desc: '바깥 구경 최고의 자리',            rarity: 'epic',   img: 'assets/gacha_items/window_perch.png' },
+};
+
+const RARITY_WEIGHTS = { common: 50, rare: 35, epic: 15 };
+const RARITY_LABELS = { common: '일반', rare: '레어', epic: '에픽' };
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let state = {
+  furballs: 0,
+  inventory: {},       // { itemId: count }
+  placedItems: [],     // [{ id, type, x, y }] positions in % of field
+  shelterLevel: 1,
+  totalItemsPlaced: 0,
+  started: false,
+};
+
+let nextItemId = 1;
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = (sel) => document.querySelector(sel);
+const field = $('#game-field');
+const introOverlay = $('#intro-overlay');
+const gachaModal = $('#gacha-modal');
+
+// ============================================================
+// RUNTIME
+// ============================================================
+let cats = [];            // active Cat instances
+let droppedFurballs = []; // active furball elements on field
+let selectedInventoryItem = null;
+let placementGhost = null;
+let lastTime = 0;
+let saveTimer = 0;
+
+// ============================================================
+// CAT CLASS
+// ============================================================
+class Cat {
+  constructor(type) {
+    this.type = type;
+    this.el = document.createElement('img');
+    this.el.src = `assets/cats/${type}.png`;
+    this.el.className = 'cat-sprite';
+    this.el.alt = CAT_NAMES[type] || type;
+
+    const rect = field.getBoundingClientRect();
+    this.x = Math.random() * (rect.width - CONFIG.SPRITE_SIZE);
+    this.y = 100 + Math.random() * (rect.height - CONFIG.SPRITE_SIZE - 120);
+
+    this.targetX = this.x;
+    this.targetY = this.y;
+    this.state = 'idle'; // idle | walking | dropping
+    this.stateTimer = this._randomIdle();
+    this.dropTimer = this._randomDropTime();
+    this.facingRight = true;
+
+    this._updatePosition();
+    field.appendChild(this.el);
+  }
+
+  _randomIdle() {
+    return CONFIG.CAT_IDLE_MIN + Math.random() * (CONFIG.CAT_IDLE_MAX - CONFIG.CAT_IDLE_MIN);
+  }
+
+  _randomDropTime() {
+    return CONFIG.FURBALL_DROP_MIN + Math.random() * (CONFIG.FURBALL_DROP_MAX - CONFIG.FURBALL_DROP_MIN);
+  }
+
+  _pickTarget() {
+    const rect = field.getBoundingClientRect();
+    this.targetX = 20 + Math.random() * (rect.width - CONFIG.SPRITE_SIZE - 40);
+    this.targetY = 80 + Math.random() * (rect.height - CONFIG.SPRITE_SIZE - 100);
+  }
+
+  _updatePosition() {
+    this.el.style.left = this.x + 'px';
+    this.el.style.top = this.y + 'px';
+    this.el.style.transform = this.facingRight ? 'scaleX(1)' : 'scaleX(-1)';
+  }
+
+  update(dt) {
+    this.stateTimer -= dt;
+    this.dropTimer -= dt;
+
+    if (this.dropTimer <= 0) {
+      this._dropFurball();
+      this.dropTimer = this._randomDropTime();
+    }
+
+    if (this.state === 'idle') {
+      if (this.stateTimer <= 0) {
+        this._pickTarget();
+        this.state = 'walking';
+      }
+    } else if (this.state === 'walking') {
+      const dx = this.targetX - this.x;
+      const dy = this.targetY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 2) {
+        this.x = this.targetX;
+        this.y = this.targetY;
+        this.state = 'idle';
+        this.stateTimer = this._randomIdle();
+      } else {
+        const speed = CONFIG.CAT_SPEED * (dt / 16);
+        this.x += (dx / dist) * speed * 2;
+        this.y += (dy / dist) * speed * 2;
+        this.facingRight = dx >= 0;
+      }
+    }
+
+    this._updatePosition();
+  }
+
+  _dropFurball() {
+    const furballType = CAT_TO_FURBALL[this.type] || 'furball_orange';
+    spawnFurball(this.x + CONFIG.SPRITE_SIZE / 2, this.y + CONFIG.SPRITE_SIZE - 10, furballType);
+  }
+
+  destroy() {
+    this.el.remove();
+  }
+}
+
+// ============================================================
+// FURBALL SYSTEM
+// ============================================================
+function spawnFurball(x, y, type) {
+  const el = document.createElement('img');
+  el.src = `assets/furballs/${type}.png`;
+  el.className = 'furball-sprite';
+  el.style.left = (x - CONFIG.FURBALL_SIZE / 2) + 'px';
+  el.style.top = y + 'px';
+
+  const furball = { el, x, y, type, born: Date.now() };
+
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    collectFurball(furball);
+  });
+
+  field.appendChild(el);
+  droppedFurballs.push(furball);
+}
+
+function collectFurball(furball) {
+  state.furballs++;
+  showFloatText(furball.x, furball.y, '+1');
+  furball.el.style.transition = 'transform 0.2s, opacity 0.2s';
+  furball.el.style.transform = 'scale(1.5)';
+  furball.el.style.opacity = '0';
+
+  setTimeout(() => {
+    furball.el.remove();
+  }, 200);
+
+  droppedFurballs = droppedFurballs.filter(f => f !== furball);
+  updateUI();
+}
+
+function updateFurballs() {
+  const now = Date.now();
+  droppedFurballs = droppedFurballs.filter(f => {
+    if (now - f.born > CONFIG.FURBALL_LIFETIME) {
+      f.el.style.transition = 'opacity 0.5s';
+      f.el.style.opacity = '0';
+      setTimeout(() => f.el.remove(), 500);
+      return false;
+    }
+    return true;
+  });
+}
+
+// ============================================================
+// FLOAT TEXT
+// ============================================================
+function showFloatText(x, y, text) {
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  field.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+// ============================================================
+// GACHA SYSTEM
+// ============================================================
+function rollGacha() {
+  if (state.furballs < CONFIG.GACHA_COST) return;
+
+  state.furballs -= CONFIG.GACHA_COST;
+  updateUI();
+
+  // Pick rarity
+  const roll = Math.random() * 100;
+  let rarity;
+  if (roll < RARITY_WEIGHTS.common) rarity = 'common';
+  else if (roll < RARITY_WEIGHTS.common + RARITY_WEIGHTS.rare) rarity = 'rare';
+  else rarity = 'epic';
+
+  // Pick item of that rarity
+  const pool = Object.entries(GACHA_ITEMS).filter(([, v]) => v.rarity === rarity);
+  const [itemId, itemData] = pool[Math.floor(Math.random() * pool.length)];
+
+  // Add to inventory
+  state.inventory[itemId] = (state.inventory[itemId] || 0) + 1;
+
+  // Show modal
+  showGachaResult(itemId, itemData, rarity);
+  saveGame();
+}
+
+function showGachaResult(itemId, itemData, rarity) {
+  gachaModal.classList.remove('hidden');
+
+  const capsule = $('#gacha-capsule');
+  const reveal = $('#gacha-reveal');
+  reveal.classList.add('hidden');
+
+  capsule.className = 'gacha-capsule capsule-' + rarity;
+  capsule.style.display = 'block';
+
+  setTimeout(() => {
+    capsule.style.display = 'none';
+    reveal.classList.remove('hidden');
+
+    const badge = $('#rarity-badge');
+    badge.className = 'rarity-badge rarity-' + rarity;
+    badge.textContent = RARITY_LABELS[rarity];
+
+    $('#gacha-item-img').src = itemData.img;
+    $('#gacha-item-name').textContent = itemData.name;
+    $('#gacha-item-desc').textContent = itemData.desc;
+  }, 900);
+}
+
+function closeGachaModal() {
+  gachaModal.classList.add('hidden');
+  updateInventoryUI();
+}
+
+// ============================================================
+// INVENTORY & PLACEMENT
+// ============================================================
+function updateInventoryUI() {
+  const inv = $('#inventory');
+  inv.innerHTML = '';
+
+  const entries = Object.entries(state.inventory).filter(([, count]) => count > 0);
+
+  if (entries.length === 0) {
+    inv.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666; font-size:12px;">아직 아이템이 없습니다</p>';
+    return;
+  }
+
+  for (const [itemId, count] of entries) {
+    const data = GACHA_ITEMS[itemId];
+    if (!data) continue;
+
+    const slot = document.createElement('div');
+    slot.className = 'inventory-slot';
+    if (selectedInventoryItem === itemId) slot.classList.add('selected');
+    slot.title = `${data.name} (${RARITY_LABELS[data.rarity]})`;
+
+    const img = document.createElement('img');
+    img.src = data.img;
+    img.alt = data.name;
+    slot.appendChild(img);
+
+    if (count > 1) {
+      const badge = document.createElement('div');
+      badge.className = 'count-badge';
+      badge.textContent = count;
+      slot.appendChild(badge);
+    }
+
+    const rarityDot = document.createElement('div');
+    rarityDot.className = 'rarity-indicator';
+    rarityDot.textContent = data.rarity === 'epic' ? '★★★' : data.rarity === 'rare' ? '★★' : '★';
+    slot.appendChild(rarityDot);
+
+    slot.addEventListener('click', () => {
+      if (selectedInventoryItem === itemId) {
+        cancelPlacement();
+      } else {
+        selectForPlacement(itemId);
+      }
+    });
+
+    inv.appendChild(slot);
+  }
+}
+
+function selectForPlacement(itemId) {
+  selectedInventoryItem = itemId;
+  updateInventoryUI();
+  $('#placement-hint').style.display = 'block';
+  field.style.cursor = 'crosshair';
+
+  // Create ghost
+  if (placementGhost) placementGhost.remove();
+  placementGhost = document.createElement('img');
+  placementGhost.src = GACHA_ITEMS[itemId].img;
+  placementGhost.className = 'placement-ghost';
+  field.appendChild(placementGhost);
+}
+
+function cancelPlacement() {
+  selectedInventoryItem = null;
+  if (placementGhost) { placementGhost.remove(); placementGhost = null; }
+  $('#placement-hint').style.display = 'none';
+  field.style.cursor = 'default';
+  updateInventoryUI();
+}
+
+function placeItem(itemId, fieldX, fieldY) {
+  const rect = field.getBoundingClientRect();
+  const xPercent = ((fieldX - CONFIG.SPRITE_SIZE / 2) / rect.width) * 100;
+  const yPercent = ((fieldY - CONFIG.SPRITE_SIZE / 2) / rect.height) * 100;
+
+  // Clamp
+  const xClamped = Math.max(0, Math.min(xPercent, 100 - (CONFIG.SPRITE_SIZE / rect.width) * 100));
+  const yClamped = Math.max(5, Math.min(yPercent, 100 - (CONFIG.SPRITE_SIZE / rect.height) * 100));
+
+  const item = {
+    id: nextItemId++,
+    type: itemId,
+    x: xClamped,
+    y: yClamped,
+  };
+
+  state.placedItems.push(item);
+  state.inventory[itemId]--;
+  if (state.inventory[itemId] <= 0) delete state.inventory[itemId];
+  state.totalItemsPlaced = state.placedItems.length;
+
+  renderPlacedItem(item);
+  cancelPlacement();
+  checkLevelUp();
+  updateUI();
+  saveGame();
+}
+
+function renderPlacedItem(item) {
+  const data = GACHA_ITEMS[item.type];
+  if (!data) return;
+
+  const el = document.createElement('img');
+  el.src = data.img;
+  el.className = 'placed-item-sprite';
+  el.style.left = item.x + '%';
+  el.style.top = item.y + '%';
+  el.title = `${data.name} - 클릭하면 회수`;
+  el.dataset.itemId = item.id;
+
+  el.addEventListener('click', (e) => {
+    if (selectedInventoryItem) return; // Don't pick up while placing
+    e.stopPropagation();
+    pickUpItem(item, el);
+  });
+
+  field.appendChild(el);
+}
+
+function pickUpItem(item, el) {
+  // Return to inventory
+  state.inventory[item.type] = (state.inventory[item.type] || 0) + 1;
+  state.placedItems = state.placedItems.filter(i => i.id !== item.id);
+  state.totalItemsPlaced = state.placedItems.length;
+
+  el.style.transition = 'transform 0.2s, opacity 0.2s';
+  el.style.transform = 'scale(0.5)';
+  el.style.opacity = '0';
+  setTimeout(() => el.remove(), 200);
+
+  showToast(`${GACHA_ITEMS[item.type].name}을(를) 회수했습니다`);
+  checkLevelUp();
+  updateUI();
+  saveGame();
+}
+
+function renderAllPlacedItems() {
+  document.querySelectorAll('.placed-item-sprite').forEach(el => el.remove());
+  for (const item of state.placedItems) {
+    renderPlacedItem(item);
+  }
+}
+
+// ============================================================
+// SHELTER LEVEL
+// ============================================================
+function getUnlockedCats() {
+  const unlocked = [];
+  for (const level of SHELTER_LEVELS) {
+    if (level.level <= state.shelterLevel) {
+      unlocked.push(...level.cats);
+    }
+  }
+  return unlocked;
+}
+
+function getCurrentLevelData() {
+  return SHELTER_LEVELS.find(l => l.level === state.shelterLevel) || SHELTER_LEVELS[0];
+}
+
+function getNextLevelData() {
+  return SHELTER_LEVELS.find(l => l.level === state.shelterLevel + 1);
+}
+
+function checkLevelUp() {
+  const prev = state.shelterLevel;
+  let newLevel = 1;
+  for (const level of SHELTER_LEVELS) {
+    if (state.totalItemsPlaced >= level.itemsNeeded) {
+      newLevel = level.level;
+    }
+  }
+
+  // Also handle level down (when items are removed)
+  state.shelterLevel = newLevel;
+
+  if (newLevel > prev) {
+    const levelData = SHELTER_LEVELS.find(l => l.level === newLevel);
+    showToast(`쉼터가 레벨업! Lv.${newLevel} "${levelData.name}"`);
+
+    for (const catType of levelData.cats) {
+      showToast(`새로운 고양이 "${CAT_NAMES[catType]}"이(가) 찾아왔어요!`);
+    }
+
+    syncCats();
+  } else if (newLevel < prev) {
+    syncCats();
+  }
+
+  updateFieldBackground();
+  updateCatListUI();
+}
+
+function updateFieldBackground() {
+  field.className = 'field-level-' + state.shelterLevel;
+}
+
+// ============================================================
+// CAT MANAGEMENT
+// ============================================================
+function syncCats() {
+  const unlocked = getUnlockedCats();
+
+  // Remove cats that are no longer unlocked
+  cats = cats.filter(cat => {
+    if (!unlocked.includes(cat.type)) {
+      cat.destroy();
+      return false;
+    }
+    return true;
+  });
+
+  // Add new cats
+  const existingTypes = new Set(cats.map(c => c.type));
+  for (const type of unlocked) {
+    if (!existingTypes.has(type)) {
+      cats.push(new Cat(type));
+    }
+  }
+}
+
+// ============================================================
+// UI UPDATES
+// ============================================================
+function updateUI() {
+  // Furball count
+  $('#furball-count').textContent = state.furballs;
+  $('#sidebar-furball-count').textContent = state.furballs;
+
+  // Gacha button
+  const btn = $('#gacha-btn');
+  btn.disabled = state.furballs < CONFIG.GACHA_COST;
+
+  // Level bar
+  const currentLevel = getCurrentLevelData();
+  const nextLevel = getNextLevelData();
+  $('#shelter-name').textContent = currentLevel.name;
+
+  if (nextLevel) {
+    const progress = Math.min(state.totalItemsPlaced / nextLevel.itemsNeeded * 100, 100);
+    $('#level-fill').style.width = progress + '%';
+    $('#level-text').textContent = `Lv.${state.shelterLevel} (${state.totalItemsPlaced}/${nextLevel.itemsNeeded})`;
+  } else {
+    $('#level-fill').style.width = '100%';
+    $('#level-text').textContent = `Lv.${state.shelterLevel} MAX`;
+  }
+
+  updateInventoryUI();
+  updateCatListUI();
+}
+
+function updateCatListUI() {
+  const list = $('#cat-list');
+  list.innerHTML = '';
+  const allCats = Object.keys(CAT_NAMES);
+  const unlocked = getUnlockedCats();
+
+  for (const catType of allCats) {
+    const badge = document.createElement('div');
+    badge.className = 'cat-badge';
+    if (!unlocked.includes(catType)) badge.classList.add('locked');
+
+    const img = document.createElement('img');
+    img.src = `assets/cats/${catType}.png`;
+    img.alt = CAT_NAMES[catType];
+    badge.appendChild(img);
+    badge.title = unlocked.includes(catType) ? CAT_NAMES[catType] : '???';
+
+    list.appendChild(badge);
+  }
+}
+
+// ============================================================
+// TOAST NOTIFICATIONS
+// ============================================================
+function showToast(message) {
+  const container = $('#toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+function saveGame() {
+  const data = {
+    furballs: state.furballs,
+    inventory: state.inventory,
+    placedItems: state.placedItems,
+    shelterLevel: state.shelterLevel,
+    totalItemsPlaced: state.totalItemsPlaced,
+    started: state.started,
+    nextItemId: nextItemId,
+  };
+  localStorage.setItem('furrball-collector-save', JSON.stringify(data));
+}
+
+function loadGame() {
+  const raw = localStorage.getItem('furrball-collector-save');
+  if (!raw) return false;
+
+  try {
+    const data = JSON.parse(raw);
+    state.furballs = data.furballs || 0;
+    state.inventory = data.inventory || {};
+    state.placedItems = data.placedItems || [];
+    state.shelterLevel = data.shelterLevel || 1;
+    state.totalItemsPlaced = data.totalItemsPlaced || 0;
+    state.started = data.started || false;
+    nextItemId = data.nextItemId || 1;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function setupEvents() {
+  // Start button
+  $('#start-btn').addEventListener('click', () => {
+    state.started = true;
+    introOverlay.classList.add('hidden');
+    saveGame();
+  });
+
+  // Gacha button
+  $('#gacha-btn').addEventListener('click', rollGacha);
+
+  // Gacha modal close
+  $('.gacha-overlay').addEventListener('click', closeGachaModal);
+  $('#gacha-confirm-btn').addEventListener('click', closeGachaModal);
+
+  // Field click for placement
+  field.addEventListener('click', (e) => {
+    if (!selectedInventoryItem) return;
+
+    const rect = field.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    placeItem(selectedInventoryItem, x, y);
+  });
+
+  // Field mouse move for ghost
+  field.addEventListener('mousemove', (e) => {
+    if (!placementGhost) return;
+    const rect = field.getBoundingClientRect();
+    const x = e.clientX - rect.left - CONFIG.SPRITE_SIZE / 2;
+    const y = e.clientY - rect.top - CONFIG.SPRITE_SIZE / 2;
+    placementGhost.style.left = x + 'px';
+    placementGhost.style.top = y + 'px';
+  });
+
+  // Right-click to cancel placement
+  field.addEventListener('contextmenu', (e) => {
+    if (selectedInventoryItem) {
+      e.preventDefault();
+      cancelPlacement();
+    }
+  });
+
+  // ESC to cancel placement
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && selectedInventoryItem) {
+      cancelPlacement();
+    }
+  });
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+function gameLoop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const dt = Math.min(timestamp - lastTime, 100); // cap delta
+  lastTime = timestamp;
+
+  // Update cats
+  for (const cat of cats) {
+    cat.update(dt);
+  }
+
+  // Clean up old furballs
+  updateFurballs();
+
+  // Auto-save
+  saveTimer += dt;
+  if (saveTimer >= CONFIG.SAVE_INTERVAL) {
+    saveTimer = 0;
+    saveGame();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  const loaded = loadGame();
+
+  setupEvents();
+
+  if (loaded && state.started) {
+    introOverlay.classList.add('hidden');
+  }
+
+  // Restore placed items
+  renderAllPlacedItems();
+
+  // Set correct background
+  updateFieldBackground();
+
+  // Spawn cats
+  syncCats();
+
+  // Update UI
+  updateUI();
+
+  // Start game loop
+  requestAnimationFrame(gameLoop);
+}
+
+init();
+</script>
+</body>
+</html>
