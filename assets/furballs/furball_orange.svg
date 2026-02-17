@@ -1,25 +1,15 @@
-<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-  <!-- Fluffy body -->
-  <circle cx="20" cy="22" r="12" fill="#F4A460"/>
-  <circle cx="14" cy="18" r="5" fill="#F4A460"/>
-  <circle cx="26" cy="18" r="5" fill="#F4A460"/>
-  <circle cx="12" cy="24" r="4.5" fill="#F4A460"/>
-  <circle cx="28" cy="24" r="4.5" fill="#F4A460"/>
-  <circle cx="15" cy="29" r="4" fill="#F4A460"/>
-  <circle cx="25" cy="29" r="4" fill="#F4A460"/>
-  <circle cx="20" cy="14" r="4" fill="#F4A460"/>
-  <!-- Inner fluff highlight -->
-  <circle cx="20" cy="20" r="7" fill="#FABE7A" opacity="0.6"/>
+<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- Body -->
+  <rect x="3" y="1" width="6" height="1" fill="#F0A050"/>
+  <rect x="2" y="2" width="8" height="1" fill="#F0A050"/>
+  <rect x="1" y="3" width="10" height="5" fill="#F0A050"/>
+  <rect x="2" y="8" width="8" height="1" fill="#F0A050"/>
+  <rect x="3" y="9" width="6" height="1" fill="#F0A050"/>
+  <!-- Highlight -->
+  <rect x="4" y="3" width="4" height="3" fill="#F8B870" opacity="0.6"/>
   <!-- Eyes -->
-  <circle cx="17" cy="21" r="2" fill="#333"/>
-  <circle cx="23" cy="21" r="2" fill="#333"/>
-  <circle cx="16.5" cy="20.5" r="0.8" fill="white"/>
-  <circle cx="22.5" cy="20.5" r="0.8" fill="white"/>
+  <rect x="4" y="5" width="1" height="1" fill="#2D3436"/>
+  <rect x="7" y="5" width="1" height="1" fill="#2D3436"/>
   <!-- Mouth -->
-  <path d="M18,24 Q20,25.5 22,24" fill="none" stroke="#D47830" stroke-width="0.8" stroke-linecap="round"/>
-  <!-- Blush -->
-  <circle cx="14" cy="23" r="2" fill="#FFB6C1" opacity="0.4"/>
-  <circle cx="26" cy="23" r="2" fill="#FFB6C1" opacity="0.4"/>
-  <!-- Sparkle -->
-  <path d="M30,8 L31,11 L34,12 L31,13 L30,16 L29,13 L26,12 L29,11 Z" fill="#FFE4B5" opacity="0.8"/>
+  <rect x="5" y="7" width="2" height="1" fill="#D08030" opacity="0.6"/>
 </svg>

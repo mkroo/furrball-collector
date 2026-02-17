@@ -1,48 +1,35 @@
-<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Shadow -->
-  <ellipse cx="32" cy="60" rx="16" ry="3" fill="rgba(0,0,0,0.08)"/>
-  <!-- Tail -->
-  <path d="M44 48 C52 44, 56 36, 54 28 C52 22, 54 18, 58 14" fill="none" stroke="#6B8498" stroke-width="5" stroke-linecap="round"/>
-  <path d="M44 48 C52 44, 56 36, 54 28 C52 22, 54 18, 58 14" fill="none" stroke="#8BA4B8" stroke-width="3" stroke-linecap="round"/>
-  <!-- Body -->
-  <ellipse cx="32" cy="50" rx="13" ry="9" fill="#8BA4B8"/>
-  <!-- Paws -->
-  <ellipse cx="23" cy="57" rx="5.5" ry="3.5" fill="#8BA4B8"/>
-  <ellipse cx="41" cy="57" rx="5.5" ry="3.5" fill="#8BA4B8"/>
-  <circle cx="21.5" cy="58" r="1.2" fill="#C8B6D0" opacity="0.7"/>
-  <circle cx="24.5" cy="58" r="1.2" fill="#C8B6D0" opacity="0.7"/>
-  <circle cx="39.5" cy="58" r="1.2" fill="#C8B6D0" opacity="0.7"/>
-  <circle cx="42.5" cy="58" r="1.2" fill="#C8B6D0" opacity="0.7"/>
+<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- Ears -->
+  <rect x="3" y="0" width="2" height="1" fill="#8898A8"/>
+  <rect x="10" y="0" width="2" height="1" fill="#8898A8"/>
+  <rect x="2" y="1" width="4" height="1" fill="#8898A8"/>
+  <rect x="9" y="1" width="4" height="1" fill="#8898A8"/>
+  <rect x="3" y="1" width="1" height="1" fill="#C0B0C8"/>
+  <rect x="11" y="1" width="1" height="1" fill="#C0B0C8"/>
   <!-- Head -->
-  <circle cx="32" cy="27" r="19" fill="#8BA4B8"/>
-  <!-- Ears outer -->
-  <polygon points="14,18 19,1 28,14" fill="#8BA4B8"/>
-  <polygon points="36,14 45,1 50,18" fill="#8BA4B8"/>
-  <!-- Ears inner -->
-  <polygon points="17,16 20,5 26,13" fill="#C8B6D0"/>
-  <polygon points="38,13 44,5 47,16" fill="#C8B6D0"/>
-  <!-- Eyes (emerald green!) -->
-  <ellipse cx="24" cy="26" rx="6" ry="6.5" fill="white"/>
-  <ellipse cx="40" cy="26" rx="6" ry="6.5" fill="white"/>
-  <ellipse cx="25" cy="27" rx="4.5" ry="5" fill="#5CB85C"/>
-  <ellipse cx="41" cy="27" rx="4.5" ry="5" fill="#5CB85C"/>
-  <ellipse cx="25.5" cy="27.5" rx="3" ry="3.5" fill="#2D7A1E"/>
-  <ellipse cx="41.5" cy="27.5" rx="3" ry="3.5" fill="#2D7A1E"/>
-  <!-- Eye highlights -->
-  <circle cx="23" cy="24.5" r="2.2" fill="white"/>
-  <circle cx="39" cy="24.5" r="2.2" fill="white"/>
-  <circle cx="27" cy="29" r="1" fill="white" opacity="0.7"/>
-  <circle cx="43" cy="29" r="1" fill="white" opacity="0.7"/>
+  <rect x="2" y="2" width="11" height="1" fill="#8898A8"/>
+  <rect x="1" y="3" width="13" height="4" fill="#8898A8"/>
+  <rect x="2" y="7" width="11" height="1" fill="#8898A8"/>
+  <!-- Subtle shading -->
+  <rect x="1" y="3" width="1" height="4" fill="#788898"/>
+  <rect x="13" y="3" width="1" height="4" fill="#788898"/>
+  <!-- Eyes (green) -->
+  <rect x="4" y="4" width="2" height="2" fill="#D0FFD0"/>
+  <rect x="9" y="4" width="2" height="2" fill="#D0FFD0"/>
+  <rect x="5" y="5" width="1" height="1" fill="#408040"/>
+  <rect x="10" y="5" width="1" height="1" fill="#408040"/>
   <!-- Nose -->
-  <path d="M30.5,32.5 L33.5,32.5 L32,34.5 Z" fill="#B0A0B8"/>
-  <!-- Mouth -->
-  <path d="M28,36 Q30,38 32,36 Q34,38 36,36" fill="none" stroke="#7090A0" stroke-width="1.2" stroke-linecap="round"/>
-  <!-- Blush -->
-  <ellipse cx="15" cy="31" rx="4" ry="2.5" fill="#D0B8D8" opacity="0.5"/>
-  <ellipse cx="49" cy="31" rx="4" ry="2.5" fill="#D0B8D8" opacity="0.5"/>
-  <!-- Whiskers -->
-  <line x1="8" y1="30" x2="17" y2="32" stroke="#7090A0" stroke-width="0.8" opacity="0.4"/>
-  <line x1="8" y1="34" x2="17" y2="33" stroke="#7090A0" stroke-width="0.8" opacity="0.4"/>
-  <line x1="47" y1="32" x2="56" y2="30" stroke="#7090A0" stroke-width="0.8" opacity="0.4"/>
-  <line x1="47" y1="33" x2="56" y2="34" stroke="#7090A0" stroke-width="0.8" opacity="0.4"/>
+  <rect x="7" y="6" width="1" height="1" fill="#B0A0B8"/>
+  <!-- Body -->
+  <rect x="3" y="8" width="9" height="1" fill="#8898A8"/>
+  <rect x="2" y="9" width="11" height="2" fill="#8898A8"/>
+  <rect x="2" y="9" width="1" height="2" fill="#788898"/>
+  <rect x="12" y="9" width="1" height="2" fill="#788898"/>
+  <!-- Paws -->
+  <rect x="2" y="11" width="3" height="1" fill="#8898A8"/>
+  <rect x="6" y="11" width="3" height="1" fill="#8898A8"/>
+  <rect x="10" y="11" width="3" height="1" fill="#8898A8"/>
+  <!-- Tail -->
+  <rect x="13" y="9" width="1" height="1" fill="#8898A8"/>
+  <rect x="14" y="7" width="1" height="2" fill="#8898A8"/>
 </svg>
