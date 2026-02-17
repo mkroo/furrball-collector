@@ -694,7 +694,7 @@
       </div>
       <div class="header-right">
         <span id="furball-count">0</span>
-        <img src="assets/furballs/furball_golden.svg" class="icon" alt="furball">
+        <img src="assets/furballs/furball_golden.png" class="icon" alt="furball">
       </div>
     </header>
 
@@ -952,7 +952,7 @@ class Cat {
 // ============================================================
 function spawnFurball(x, y, type) {
   const el = document.createElement('img');
-  el.src = `assets/furballs/${type}.svg`;
+  el.src = `assets/furballs/${type}.png`;
   el.className = 'furball-sprite';
   el.style.left = (x - CONFIG.FURBALL_SIZE / 2) + 'px';
   el.style.top = y + 'px';
