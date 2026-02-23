@@ -205,7 +205,6 @@ class Cat {
   constructor(type) {
     this.type = type;
     this.el = document.createElement('img');
-    this.el.src = `assets/cats/${type}.svg`;
     this.el.className = 'cat-sprite';
     this.el.alt = CAT_NAMES[type] || type;
 
@@ -215,10 +214,17 @@ class Cat {
 
     this.targetX = this.x;
     this.targetY = this.y;
-    this.state = 'idle'; // idle | walking | dropping
+    this.state = 'idle'; // idle | walking | sitting | sleeping | grooming
     this.stateTimer = this._randomIdle();
     this.dropTimer = this._randomDropTime();
     this.facingRight = true;
+
+    // Animation state
+    this.animState = 'idle';
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.animSequence = ANIM_SEQUENCES.idle;
+    this._updateSprite();
 
     // Feature #5: name label
     this.nameEl = document.createElement('div');
@@ -260,9 +266,43 @@ class Cat {
     this.nameEl.style.top = (this.y - 18) + 'px';
   }
 
+  // --- Animation methods ---
+  _setAnimState(name) {
+    if (this.animState === name) return;
+    this.animState = name;
+    this.animSequence = ANIM_SEQUENCES[name] || ANIM_SEQUENCES.idle;
+    this.animFrame = 0;
+    this.animTimer = this.animSequence.frameDuration;
+    this._updateSprite();
+  }
+
+  _updateSprite() {
+    const frameKey = this.animSequence.frames[this.animFrame];
+    this.el.src = getCachedSprite(this.type, frameKey);
+  }
+
+  _advanceFrame(dt) {
+    this.animTimer -= dt;
+    if (this.animTimer <= 0) {
+      this.animFrame = (this.animFrame + 1) % this.animSequence.frames.length;
+      // Walk animation speed scales with cat speed
+      let duration = this.animSequence.frameDuration;
+      if (this.animState === 'walk') {
+        duration = duration / (state.catSpeedMultiplier || 1.0);
+      }
+      this.animTimer = duration;
+      this._updateSprite();
+    }
+  }
+
   update(dt) {
+    // Advance frame animation
+    this._advanceFrame(dt);
+
     this.stateTimer -= dt;
-    if (!isViewMode) {
+
+    // Furball drops (not while sleeping)
+    if (!isViewMode && this.state !== 'sleeping') {
       this.dropTimer -= dt;
       if (this.dropTimer <= 0) {
         this._dropFurball();
@@ -273,9 +313,23 @@ class Cat {
     const speedMult = state.catSpeedMultiplier || 1.0;
 
     if (this.state === 'idle') {
+      this._setAnimState('idle');
       if (this.stateTimer <= 0) {
-        this._pickTarget();
-        this.state = 'walking';
+        // Transition: walking 50%, sitting 30%, grooming 20%
+        const roll = Math.random();
+        if (roll < 0.5) {
+          this._pickTarget();
+          this.state = 'walking';
+          this._setAnimState('walk');
+        } else if (roll < 0.8) {
+          this.state = 'sitting';
+          this.stateTimer = 3000 + Math.random() * 5000;
+          this._setAnimState('sit');
+        } else {
+          this.state = 'grooming';
+          this.stateTimer = 2000 + Math.random() * 2000;
+          this._setAnimState('groom');
+        }
       }
     } else if (this.state === 'walking') {
       const dx = this.targetX - this.x;
@@ -287,11 +341,37 @@ class Cat {
         this.y = this.targetY;
         this.state = 'idle';
         this.stateTimer = this._randomIdle();
+        this._setAnimState('idle');
       } else {
         const speed = CONFIG.CAT_SPEED * speedMult * (dt / 16);
         this.x += (dx / dist) * speed * 2;
         this.y += (dy / dist) * speed * 2;
         this.facingRight = dx >= 0;
+      }
+    } else if (this.state === 'sitting') {
+      if (this.stateTimer <= 0) {
+        // Transition: sleeping 40%, idle 60%
+        if (Math.random() < 0.4) {
+          this.state = 'sleeping';
+          this.stateTimer = 8000 + Math.random() * 12000;
+          this._setAnimState('sleep');
+        } else {
+          this.state = 'idle';
+          this.stateTimer = this._randomIdle();
+          this._setAnimState('idle');
+        }
+      }
+    } else if (this.state === 'sleeping') {
+      if (this.stateTimer <= 0) {
+        this.state = 'idle';
+        this.stateTimer = this._randomIdle();
+        this._setAnimState('idle');
+      }
+    } else if (this.state === 'grooming') {
+      if (this.stateTimer <= 0) {
+        this.state = 'idle';
+        this.stateTimer = this._randomIdle();
+        this._setAnimState('idle');
       }
     }
 
@@ -869,7 +949,7 @@ function updateCatListUI() {
     if (!isUnlocked) badge.classList.add('locked');
 
     const img = document.createElement('img');
-    img.src = `assets/cats/${catType}.svg`;
+    img.src = getCachedSprite(catType, 'idle_0');
     img.alt = CAT_NAMES[catType];
     badge.appendChild(img);
 
@@ -892,7 +972,7 @@ function openNameModal(catType) {
   const modal = $('#name-modal');
   modal.classList.remove('hidden');
 
-  $('#name-modal-img').src = `assets/cats/${catType}.svg`;
+  $('#name-modal-img').src = getCachedSprite(catType, 'idle_0');
   const defaultName = CAT_NAMES[catType];
   const currentName = state.catNames[catType] || defaultName;
   $('#name-modal-title').textContent = `${defaultName}의 이름`;

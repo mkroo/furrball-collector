@@ -175,12 +175,6 @@ main {
   pointer-events: none;
   image-rendering: pixelated;
   filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.15));
-  animation: catBob 2.5s ease-in-out infinite;
-}
-
-@keyframes catBob {
-  0%, 100% { margin-top: 0; }
-  50% { margin-top: -3px; }
 }
 
 .furball-sprite {
