@@ -77,6 +77,57 @@ const GACHA_ITEMS = {
   trash_can:       { name: '쓰레기통',     desc: '생선뼈 냄새가 솔솔~',              rarity: 'epic',   img: 'assets/gacha_items/trash_can.png' },
   scratching_post: { name: '스크래처',     desc: '가구 대신 이걸 긁어주세요',        rarity: 'epic',   img: 'assets/gacha_items/scratching_post.png' },
   window_perch:    { name: '창문 선반',    desc: '바깥 구경 최고의 자리',            rarity: 'epic',   img: 'assets/gacha_items/window_perch.png' },
+  // --- Common (16 new) ---
+  newspaper:       { name: '신문지',       desc: '바스락바스락 최고의 장난감',       rarity: 'common', img: 'assets/gacha_items/newspaper.png' },
+  paper_bag:       { name: '종이봉투',     desc: '들어가면 나오고 싶지 않아',       rarity: 'common', img: 'assets/gacha_items/paper_bag.png' },
+  blanket:         { name: '담요',         desc: '따뜻한 낮잠의 필수품',            rarity: 'common', img: 'assets/gacha_items/blanket.png' },
+  water_bowl:      { name: '물그릇',       desc: '시원한 물 한 그릇',               rarity: 'common', img: 'assets/gacha_items/water_bowl.png' },
+  slipper:         { name: '슬리퍼',       desc: '왜 항상 한 짝만 사라질까',        rarity: 'common', img: 'assets/gacha_items/slipper.png' },
+  tissue_box:      { name: '티슈박스',     desc: '뽑고 또 뽑고 끝이 없다',          rarity: 'common', img: 'assets/gacha_items/tissue_box.png' },
+  sock:            { name: '양말',         desc: '발 냄새가 매력 포인트',            rarity: 'common', img: 'assets/gacha_items/sock.png' },
+  shoe_box:        { name: '신발상자',     desc: '딱 맞는 사이즈의 집',             rarity: 'common', img: 'assets/gacha_items/shoe_box.png' },
+  milk_carton:     { name: '우유팩',       desc: '빈 팩도 재미있어',                rarity: 'common', img: 'assets/gacha_items/milk_carton.png' },
+  tin_can:         { name: '깡통',         desc: '데굴데굴 굴러가는 소리',          rarity: 'common', img: 'assets/gacha_items/tin_can.png' },
+  leaf:            { name: '나뭇잎',       desc: '바람에 날리면 사냥 본능 발동',     rarity: 'common', img: 'assets/gacha_items/leaf.png' },
+  pine_cone:       { name: '솔방울',       desc: '자연산 장난감',                   rarity: 'common', img: 'assets/gacha_items/pine_cone.png' },
+  rubber_duck:     { name: '고무 오리',    desc: '삑삑! 오리인 척',                 rarity: 'common', img: 'assets/gacha_items/rubber_duck.png' },
+  ball:            { name: '공',           desc: '단순하지만 영원한 재미',           rarity: 'common', img: 'assets/gacha_items/ball.png' },
+  pencil:          { name: '연필',         desc: '굴러가는 게 제일 재미있어',        rarity: 'common', img: 'assets/gacha_items/pencil.png' },
+  plastic_cup:     { name: '플라스틱 컵',  desc: '쓰러뜨리기 챌린지',               rarity: 'common', img: 'assets/gacha_items/plastic_cup.png' },
+  // --- Rare (16 new) ---
+  laser_pointer:   { name: '레이저 포인터', desc: '빨간 점의 유혹',                 rarity: 'rare',   img: 'assets/gacha_items/laser_pointer.png' },
+  bell_toy:        { name: '방울 장난감',   desc: '딸랑딸랑 신나는 소리',            rarity: 'rare',   img: 'assets/gacha_items/bell_toy.png' },
+  catnip:          { name: '캣닢',          desc: '한 번 맡으면 멈출 수 없어',       rarity: 'rare',   img: 'assets/gacha_items/catnip.png' },
+  tunnel:          { name: '터널',          desc: '숨바꼭질 최고의 장소',            rarity: 'rare',   img: 'assets/gacha_items/tunnel.png' },
+  hammock:         { name: '해먹',          desc: '흔들흔들 꿀잠 타임',              rarity: 'rare',   img: 'assets/gacha_items/hammock.png' },
+  feather_wand:    { name: '깃털 낚시대',   desc: '점프 훈련 도구',                  rarity: 'rare',   img: 'assets/gacha_items/feather_wand.png' },
+  mirror:          { name: '거울',          desc: '누구냥? 나냥!',                   rarity: 'rare',   img: 'assets/gacha_items/mirror.png' },
+  music_box:       { name: '오르골',        desc: '잔잔한 자장가',                   rarity: 'rare',   img: 'assets/gacha_items/music_box.png' },
+  ribbon:          { name: '리본',          desc: '화려한 꼬리 장식',                rarity: 'rare',   img: 'assets/gacha_items/ribbon.png' },
+  brush:           { name: '빗',            desc: '빗질하면 골골골',                 rarity: 'rare',   img: 'assets/gacha_items/brush.png' },
+  treat_jar:       { name: '간식통',        desc: '흔들면 달려오는 마법',             rarity: 'rare',   img: 'assets/gacha_items/treat_jar.png' },
+  pillow:          { name: '베개',          desc: '머리 베기 딱 좋은 크기',           rarity: 'rare',   img: 'assets/gacha_items/pillow.png' },
+  rug:             { name: '러그',          desc: '폭신한 발바닥 천국',              rarity: 'rare',   img: 'assets/gacha_items/rug.png' },
+  basket:          { name: '바구니',        desc: '들어가면 딱 맞는 아늑함',          rarity: 'rare',   img: 'assets/gacha_items/basket.png' },
+  lantern:         { name: '랜턴',          desc: '따뜻한 불빛 아래에서',             rarity: 'rare',   img: 'assets/gacha_items/lantern.png' },
+  wind_chime:      { name: '풍경',          desc: '바람이 불면 딸랑',                rarity: 'rare',   img: 'assets/gacha_items/wind_chime.png' },
+  // --- Epic (16 new) ---
+  fountain:        { name: '분수대',        desc: '졸졸졸 흐르는 물소리',             rarity: 'epic',   img: 'assets/gacha_items/fountain.png' },
+  tree_house:      { name: '나무집',        desc: '높은 곳을 좋아하는 고양이를 위해', rarity: 'epic',   img: 'assets/gacha_items/tree_house.png' },
+  hot_spring:      { name: '온천',          desc: '포근한 김이 모락모락',             rarity: 'epic',   img: 'assets/gacha_items/hot_spring.png' },
+  mini_castle:     { name: '미니 성',       desc: '고양이 왕국의 시작',              rarity: 'epic',   img: 'assets/gacha_items/mini_castle.png' },
+  swing:           { name: '그네',          desc: '흔들흔들 하늘 위로',              rarity: 'epic',   img: 'assets/gacha_items/swing.png' },
+  slide:           { name: '미끄럼틀',      desc: '슝~ 내려가는 재미',               rarity: 'epic',   img: 'assets/gacha_items/slide.png' },
+  aquarium:        { name: '어항',          desc: '물고기 구경 최고의 자리',          rarity: 'epic',   img: 'assets/gacha_items/aquarium.png' },
+  piano:           { name: '피아노',        desc: '밤마다 연주회 개최',              rarity: 'epic',   img: 'assets/gacha_items/piano.png' },
+  tent:            { name: '텐트',          desc: '비밀 아지트 완성',                rarity: 'epic',   img: 'assets/gacha_items/tent.png' },
+  fireplace:       { name: '벽난로',        desc: '따뜻한 불 옆 최고의 자리',        rarity: 'epic',   img: 'assets/gacha_items/fireplace.png' },
+  chandelier:      { name: '샹들리에',      desc: '반짝반짝 럭셔리',                rarity: 'epic',   img: 'assets/gacha_items/chandelier.png' },
+  telescope:       { name: '망원경',        desc: '새 관찰 전용',                   rarity: 'epic',   img: 'assets/gacha_items/telescope.png' },
+  carousel:        { name: '회전목마',      desc: '빙글빙글 도는 꿈',               rarity: 'epic',   img: 'assets/gacha_items/carousel.png' },
+  rainbow_arch:    { name: '무지개 아치',   desc: '쉼터의 상징',                    rarity: 'epic',   img: 'assets/gacha_items/rainbow_arch.png' },
+  sakura_tree:     { name: '벚꽃나무',      desc: '꽃잎이 흩날리는 낭만',            rarity: 'epic',   img: 'assets/gacha_items/sakura_tree.png' },
+  golden_bell:     { name: '황금 방울',     desc: '전설의 고양이 방울',              rarity: 'epic',   img: 'assets/gacha_items/golden_bell.png' },
 };
 
 const RARITY_WEIGHTS = { common: 50, rare: 35, epic: 15 };
@@ -262,7 +313,7 @@ class Cat {
 // ============================================================
 function spawnFurball(x, y, type) {
   const el = document.createElement('img');
-  el.src = `assets/furballs/${type}.png`;
+  el.src = `assets/furballs/${type}.svg`;
   el.className = 'furball-sprite';
   el.style.left = (x - CONFIG.FURBALL_SIZE / 2) + 'px';
   el.style.top = y + 'px';
