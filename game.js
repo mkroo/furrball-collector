@@ -192,10 +192,11 @@ const gachaModal = $('#gacha-modal');
 // ============================================================
 let cats = [];            // active Cat instances
 let droppedFurballs = []; // active furball elements on field
-let selectedInventoryItem = null;
-let placementGhost = null;
 let lastTime = 0;
 let saveTimer = 0;
+let dragState = null;
+// { source: 'inventory'|'field', itemType, itemId, originItem?, originEl?,
+//   ghostEl, startX, startY, dragging }
 
 // ============================================================
 // CAT CLASS
@@ -486,12 +487,12 @@ function updateInventoryUI() {
 
     const slot = document.createElement('div');
     slot.className = 'inventory-slot';
-    if (selectedInventoryItem === itemId) slot.classList.add('selected');
     slot.title = `${data.name} (${RARITY_LABELS[data.rarity]})`;
 
     const img = document.createElement('img');
     img.src = data.img;
     img.alt = data.name;
+    img.draggable = false;
     slot.appendChild(img);
 
     if (count > 1) {
@@ -506,38 +507,145 @@ function updateInventoryUI() {
     rarityDot.textContent = data.rarity === 'epic' ? '★★★' : data.rarity === 'rare' ? '★★' : '★';
     slot.appendChild(rarityDot);
 
-    slot.addEventListener('click', () => {
-      if (selectedInventoryItem === itemId) {
-        cancelPlacement();
-      } else {
-        selectForPlacement(itemId);
-      }
+    slot.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      initDrag('inventory', itemId, null, null, null, e);
     });
+    slot.addEventListener('touchstart', (e) => {
+      initDrag('inventory', itemId, null, null, null, e);
+    }, { passive: false });
 
     inv.appendChild(slot);
   }
 }
 
-function selectForPlacement(itemId) {
-  selectedInventoryItem = itemId;
-  updateInventoryUI();
-  $('#placement-hint').style.display = 'block';
-  field.style.cursor = 'crosshair';
-
-  // Create ghost
-  if (placementGhost) placementGhost.remove();
-  placementGhost = document.createElement('img');
-  placementGhost.src = GACHA_ITEMS[itemId].img;
-  placementGhost.className = 'placement-ghost';
-  field.appendChild(placementGhost);
+// ============================================================
+// DRAG AND DROP SYSTEM
+// ============================================================
+function initDrag(source, itemType, itemId, originItem, originEl, e) {
+  if (isViewMode) return;
+  const point = e.touches ? e.touches[0] : e;
+  dragState = {
+    source,
+    itemType,
+    itemId: itemId,
+    originItem: originItem || null,
+    originEl: originEl || null,
+    ghostEl: null,
+    startX: point.clientX,
+    startY: point.clientY,
+    dragging: false,
+  };
 }
 
-function cancelPlacement() {
-  selectedInventoryItem = null;
-  if (placementGhost) { placementGhost.remove(); placementGhost = null; }
+function moveDrag(e) {
+  if (!dragState) return;
+  const point = e.touches ? e.touches[0] : e;
+
+  if (!dragState.dragging) {
+    const dx = point.clientX - dragState.startX;
+    const dy = point.clientY - dragState.startY;
+    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+
+    // Enter drag mode
+    dragState.dragging = true;
+    if (dragState.source === 'inventory') {
+      $('#placement-hint').style.display = 'block';
+    }
+
+    // Create ghost element
+    const data = GACHA_ITEMS[dragState.itemType];
+    if (!data) { dragState = null; return; }
+
+    const ghost = document.createElement('img');
+    ghost.src = data.img;
+    ghost.className = 'drag-ghost';
+    ghost.style.position = 'fixed';
+    ghost.style.width = CONFIG.SPRITE_SIZE + 'px';
+    ghost.style.height = CONFIG.SPRITE_SIZE + 'px';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.opacity = '0.8';
+    ghost.style.zIndex = '1000';
+    ghost.style.imageRendering = 'pixelated';
+    ghost.style.left = (point.clientX - CONFIG.SPRITE_SIZE / 2) + 'px';
+    ghost.style.top = (point.clientY - CONFIG.SPRITE_SIZE / 2) + 'px';
+    document.body.appendChild(ghost);
+    dragState.ghostEl = ghost;
+
+    // If dragging from field, make original semi-transparent
+    if (dragState.source === 'field' && dragState.originEl) {
+      dragState.originEl.style.opacity = '0.3';
+    }
+  }
+
+  // Update ghost position
+  if (dragState.ghostEl) {
+    dragState.ghostEl.style.left = (point.clientX - CONFIG.SPRITE_SIZE / 2) + 'px';
+    dragState.ghostEl.style.top = (point.clientY - CONFIG.SPRITE_SIZE / 2) + 'px';
+  }
+
+  if (e.cancelable) e.preventDefault();
+}
+
+function endDrag(e) {
+  if (!dragState) return;
+  const ds = dragState;
+  const point = e.changedTouches ? e.changedTouches[0] : e;
+
+  if (!ds.dragging) {
+    // Short click — not a drag
+    if (ds.source === 'field' && ds.originItem && ds.originEl) {
+      pickUpItem(ds.originItem, ds.originEl);
+    }
+    dragState = null;
+    return;
+  }
+
+  // It was a drag — check drop target
+  const dropX = point.clientX;
+  const dropY = point.clientY;
+  const fieldRect = field.getBoundingClientRect();
+  const isInField = dropX >= fieldRect.left && dropX <= fieldRect.right &&
+                    dropY >= fieldRect.top && dropY <= fieldRect.bottom;
+
+  if (isInField) {
+    const localX = dropX - fieldRect.left;
+    const localY = dropY - fieldRect.top;
+
+    if (ds.source === 'inventory') {
+      // Place item from inventory onto field
+      placeItem(ds.itemType, localX, localY);
+    } else if (ds.source === 'field') {
+      // Move placed item within field
+      const xPercent = ((localX - CONFIG.SPRITE_SIZE / 2) / fieldRect.width) * 100;
+      const yPercent = ((localY - CONFIG.SPRITE_SIZE / 2) / fieldRect.height) * 100;
+      const xClamped = Math.max(0, Math.min(xPercent, 100 - (CONFIG.SPRITE_SIZE / fieldRect.width) * 100));
+      const yClamped = Math.max(5, Math.min(yPercent, 100 - (CONFIG.SPRITE_SIZE / fieldRect.height) * 100));
+
+      const placedItem = state.placedItems.find(i => i.id === ds.itemId);
+      if (placedItem) {
+        placedItem.x = xClamped;
+        placedItem.y = yClamped;
+      }
+      if (ds.originEl) {
+        ds.originEl.style.left = xClamped + '%';
+        ds.originEl.style.top = yClamped + '%';
+        ds.originEl.style.opacity = '1';
+      }
+      saveGame();
+    }
+  } else {
+    // Dropped outside field — revert
+    if (ds.source === 'field' && ds.originEl) {
+      ds.originEl.style.opacity = '1';
+    }
+  }
+
+  // Cleanup
+  if (ds.ghostEl) ds.ghostEl.remove();
   $('#placement-hint').style.display = 'none';
-  field.style.cursor = 'default';
-  updateInventoryUI();
+  dragState = null;
 }
 
 function placeItem(itemId, fieldX, fieldY) {
@@ -567,7 +675,6 @@ function placeItem(itemId, fieldX, fieldY) {
   addXP(xpAmount);
 
   renderPlacedItem(item);
-  cancelPlacement();
   checkLevelUp();
   updateUI();
   checkAchievements();
@@ -583,15 +690,22 @@ function renderPlacedItem(item) {
   el.className = 'placed-item-sprite';
   el.style.left = item.x + '%';
   el.style.top = item.y + '%';
-  el.title = `${data.name} - 클릭하면 회수`;
+  el.title = `${data.name} - 클릭: 회수 / 드래그: 이동`;
   el.dataset.itemId = item.id;
+  el.draggable = false;
 
-  el.addEventListener('click', (e) => {
-    if (selectedInventoryItem) return; // Don't pick up while placing
-    if (isViewMode) return; // Read-only in view mode
+  el.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    if (isViewMode) return;
     e.stopPropagation();
-    pickUpItem(item, el);
+    e.preventDefault();
+    initDrag('field', item.type, item.id, item, el, e);
   });
+  el.addEventListener('touchstart', (e) => {
+    if (isViewMode) return;
+    e.stopPropagation();
+    initDrag('field', item.type, item.id, item, el, e);
+  }, { passive: false });
 
   field.appendChild(el);
 }
@@ -1227,39 +1341,21 @@ function setupEvents() {
   $('.gacha-overlay').addEventListener('click', closeGachaModal);
   $('#gacha-confirm-btn').addEventListener('click', closeGachaModal);
 
-  // Field click for placement
-  field.addEventListener('click', (e) => {
-    if (isViewMode) return;
-    if (!selectedInventoryItem) return;
+  // Drag and drop — document-level handlers
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, { passive: false });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
 
-    const rect = field.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    placeItem(selectedInventoryItem, x, y);
-  });
-
-  // Field mouse move for ghost
-  field.addEventListener('mousemove', (e) => {
-    if (!placementGhost) return;
-    const rect = field.getBoundingClientRect();
-    const x = e.clientX - rect.left - CONFIG.SPRITE_SIZE / 2;
-    const y = e.clientY - rect.top - CONFIG.SPRITE_SIZE / 2;
-    placementGhost.style.left = x + 'px';
-    placementGhost.style.top = y + 'px';
-  });
-
-  // Right-click to cancel placement
-  field.addEventListener('contextmenu', (e) => {
-    if (selectedInventoryItem) {
-      e.preventDefault();
-      cancelPlacement();
-    }
-  });
-
-  // ESC to cancel placement
+  // ESC to cancel drag
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && selectedInventoryItem) {
-      cancelPlacement();
+    if (e.key === 'Escape' && dragState) {
+      if (dragState.source === 'field' && dragState.originEl) {
+        dragState.originEl.style.opacity = '1';
+      }
+      if (dragState.ghostEl) dragState.ghostEl.remove();
+      $('#placement-hint').style.display = 'none';
+      dragState = null;
     }
   });
 
